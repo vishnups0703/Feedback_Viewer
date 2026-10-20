@@ -7,7 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <style>
 :root{--bg:#f3f6fb;--card:#fff;--text:#18202e;--muted:#5f6b80;--line:#d6deeb;--accent:#3b82f6;--ok:#1f9d55;--err:#d03a3a}
-@media (prefers-color-scheme:dark){:root{--bg:#0e1420;--card:#172033;--text:#e8eef9;--muted:#9aa8c2;--line:#2a3856}}
+@media (prefers-color-scheme:dark){:root{--bg:#2354b6;--card:#172033;--text:#e8eef9;--muted:#9aa8c2;--line:#2a3856}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
 /* setup */
@@ -147,7 +147,7 @@ function show(c){
     if(count>=c.total&&!launched){launched=true;launch()}
   }
   function launch(){
-    var m=$("#m"),msg=$("#msg");msg.textContent="🚀 "+c.after;
+    var m=$("#m"),msg=$("#msg");msg.textContent=" "+c.after;
     $("#fl").style.transform="scale(1.9,2.2)";m.className="burn";
     setTimeout(function(){m.className="fly";$("#fl").style.transform="scale(2.4,3)";msg.className="on"},1800);
   }
