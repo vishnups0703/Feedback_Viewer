@@ -1,4 +1,4 @@
-# Feedback Launch
+# Feedback Viewer
 
 A real-time, interactive presenter tool designed to display live audience feedback progress using an animated rocket mascot launch. 
 
