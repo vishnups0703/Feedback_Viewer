@@ -43,9 +43,10 @@ button.p:hover{background:#242422}
 #tstmsg{font-size:.88rem;color:var(--text)}
 
 /* display */
-.show{height:100vh;display:grid;grid-template-columns:1.2fr 1fr;gap:24px;padding:24px;background:linear-gradient(#0b1230,#1b2a5c);color:#eaf0ff;overflow:hidden; position:relative;}
+.show{height:100vh;display:grid;grid-template-columns:1.2fr 1fr;gap:24px;padding:24px;background:linear-gradient(#0b1230,#1b2a5c);color:#eaf0ff;overflow:hidden; position:relative; transition: grid-template-columns 0.6s ease;}
+.show.launched-layout { grid-template-columns: 1fr; }
 @media (max-width:800px){.show{grid-template-columns:1fr;height:auto;min-height:100vh}}
-.stage{position:relative;border-radius:22px;background:radial-gradient(2px 2px at 20% 15%,#fff,transparent),radial-gradient(2px 2px at 70% 25%,#fff,transparent),radial-gradient(1.5px 1.5px at 45% 40%,#fff,transparent),radial-gradient(2px 2px at 85% 60%,#fff,transparent),radial-gradient(1.5px 1.5px at 10% 70%,#fff,transparent),rgba(255,255,255,.04);overflow:hidden;min-height:340px}
+.stage{position:relative;border-radius:22px;background:radial-gradient(2px 2px at 20% 15%,#fff,transparent),radial-gradient(2px 2px at 70% 25%,#fff,transparent),radial-gradient(1.5px 1.5px at 45% 40%,#fff,transparent),radial-gradient(2px 2px at 85% 60%,#fff,transparent),radial-gradient(1.5px 1.5px at 10% 70%,#fff,transparent),rgba(255,255,255,.04);overflow:hidden;min-height:340px; width:100%; height:100%;}
 
 /* Enhanced Animations */
 #m{transition:transform 2.4s cubic-bezier(.5,0,1,.6)}
@@ -88,10 +89,10 @@ button.p:hover{background:#242422}
 .flash.active{animation:flashScreen 1s ease-out;}
 @keyframes flashScreen{0%{opacity:1}100%{opacity:0}}
 
-.fade-out{opacity:0 !important; pointer-events:none; transition:opacity 0.5s ease-out;}
+.fade-out{display:none !important;}
 
-#msg{position:absolute; left:0; right:0; top:40%; text-align:center; font-size:clamp(1.8rem,5vw,4rem); font-weight:800; opacity:0; transform:scale(0.3); transition:all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index:10; text-shadow:0 10px 30px rgba(0,0,0,0.8);}
-#msg.on{opacity:1; transform:scale(1);}
+#msg{position:absolute; left:50%; top:8%; transform:translateX(-50%) scale(0.3); text-align:center; font-size:clamp(2rem,6vw,4.5rem); font-weight:800; opacity:0; transition:all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index:10; text-shadow:0 10px 30px rgba(0,0,0,0.8); width:90%;}
+#msg.on{opacity:1; transform:translateX(-50%) scale(1);}
 .warn{color:#ffb3b3;font-size:.85rem;min-height:1.2em}
 </style>
 </head>
@@ -155,7 +156,7 @@ async function fetchCount(url){
 function setup(){
   if(document.fullscreenElement)document.exitFullscreen();
   var c=load()||{total:10,mode:"num",head:"Scan and share your feedback",after:"Launch Successful!"};
-  app.innerHTML='<div class="top"><div class="brand">Feedback Launch<span>Setup</span></div><div class="tag">Presenter only</div></div>'
+  app.innerHTML='<div class="top"><div class="brand">Feedback<span>Setup</span></div><div class="tag">Presenter only</div></div>'
   +'<div class="page"><h1>Set up your feedback session</h1><p class="lead">Connect your response sheet, set how many people you expect, and launch the display. Your audience only ever sees the final screen.</p><div class="cols"><div>'
   +'<div class="card"><h2>Data source</h2><p class="d">Where responses are collected and where people scan to answer.</p>'
   +'<div class="field"><label>Feedback sheet link</label><input type="text" id="sheet" placeholder="https://docs.google.com/spreadsheets/d/..."><span class="hint">The Google Sheet linked to your form. Share it as "Anyone with the link" (Viewer).</span></div>'
@@ -195,7 +196,7 @@ function mascot(){
 function show(c){
   var q="";try{var qq=qrcode(0,"M");qq.addData(c.form||"https://example.com");qq.make();q=qq.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){}
   
-  app.innerHTML='<div class="flash" id="flash"></div><div class="show"><div class="stage"><div class="warning-glow" id="glow"></div>'+mascot()+'<div id="msg"></div></div><div class="side" id="side"><h1 id="hd">'+esc(c.head)+'</h1><div><div class="big" id="n"></div></div><div class="bar" id="bwrap"><i id="bar"></i></div><div class="qr" id="qwrap">'+q+'</div><div class="warn" id="warn"></div></div></div>';
+  app.innerHTML='<div class="flash" id="flash"></div><div class="show" id="show-container"><div class="stage" id="stage-box"><div class="warning-glow" id="glow"></div>'+mascot()+'<div id="msg"></div></div><div class="side" id="side"><h1 id="hd">'+esc(c.head)+'</h1><div><div class="big" id="n"></div></div><div class="bar" id="bwrap"><i id="bar"></i></div><div class="qr" id="qwrap">'+q+'</div><div class="warn" id="warn"></div></div></div>';
   
   var count=0, launched=false, prevCount=-1;
   
@@ -243,12 +244,12 @@ function show(c){
   }
 
   function launch(){
-    var m=$("#m"), msg=$("#msg"), fl=$("#fl"), side=$("#side");
+    var m=$("#m"), msg=$("#msg"), fl=$("#fl"), side=$("#side"), showContainer=$("#show-container");
     msg.textContent="🚀 "+c.after;
     
-    // 3. Climactic Payoff
-    // Fade out everything on the right side
+    // 3. Climactic Payoff: Center stage & hide sidebar
     side.classList.add("fade-out");
+    showContainer.classList.add("launched-layout");
     $("#glow").classList.remove("active");
     
     // Trigger full screen flash
@@ -259,7 +260,7 @@ function show(c){
     fl.style.transform = "scale(2.5, 3.5)";
     m.className = "shoot";
     
-    // Bring in final success message dramatically
+    // Bring in top-centered success message dramatically
     setTimeout(function(){
       msg.className="on";
     }, 600);
